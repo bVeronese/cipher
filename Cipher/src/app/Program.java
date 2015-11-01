@@ -2,11 +2,14 @@ package app;
 
 import java.io.File;
 
+import app.io.Reader;
+
 public class Program {
 
 	public static void main(String[] args) {
 
 		String filename;
+		// List<String> toCipher;
 		
 		if (args.length < 1)
 			System.exit(1);
@@ -22,6 +25,16 @@ public class Program {
 		if(file.isDirectory())
 			System.exit(1);
 
+		Thread reader = new Thread(new Reader(file));
+		reader.start();
+		
+		
+		try {
+			reader.join();
+		} catch (InterruptedException e) {
+			System.err.println(e.getMessage());
+		}
+		
 	}
 
 }
