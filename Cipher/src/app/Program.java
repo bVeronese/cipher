@@ -34,7 +34,7 @@ public class Program {
 		
 		cipheredFilePath = args[1];
 		
-		if(args.length <= 3) {
+		if(args.length == 3) {
 			if ((args[2] == null || !(args[2] instanceof String))) {
 				System.err.println("Third argument is invalid.");
 				System.err.println("Valid Arguments: \n\t\t[-d] to decipher a file. Ignoring it..");
