@@ -1,11 +1,11 @@
 package app;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.Date;
 import java.util.Random;
 
@@ -15,32 +15,36 @@ public class Program {
 
 		String filename;
 		String cipheredFilePath;
-		boolean mayICipher;
+		boolean mayIDecipher;
 		
-		if (args.length < 3)
+		if (args.length < 2)
 			System.exit(1);
 
 		if (args[0] == null || !(args[0] instanceof String)) {
-			System.err.println("First argument is invalid.");
+			System.err.println("First argument is invalid. It must be the path to an existing file");
 			System.exit(1);
 		}
 		
 		filename = args[0];
 
 		if (args[1] == null || !(args[1] instanceof String)) {
-			System.err.println("Second argument is invalid.");
+			System.err.println("Second argument is invalid. It must be the path to a non-existing file");
 			System.exit(1);
 		}
 		
 		cipheredFilePath = args[1];
 		
-		if (args[2] == null || !(args[2] instanceof String)) {
-			System.err.println("Third argument is invalid.");
-			System.exit(1);
+		if(args.length <= 3) {
+			if ((args[2] == null || !(args[2] instanceof String))) {
+				System.err.println("Third argument is invalid.");
+				System.err.println("Valid Arguments: \n\t\t[-d] to decipher a file. Ignoring it..");
+				mayIDecipher = false;
+			} else {
+				mayIDecipher = ("-d".equals(args[2]));
+			}
+		} else {
+			mayIDecipher = false;
 		}
-		
-		mayICipher = (!"-d".equals(args[2]));
-		
 		
 		File file = new File(filename);
 
@@ -56,7 +60,7 @@ public class Program {
 			System.exit(1);
 		}
 		
-		if(mayICipher) {
+		if(!mayIDecipher) {
 			cipher(file, newFile);
 		} else {
 			decipher(file, newFile);
@@ -68,19 +72,19 @@ public class Program {
 		
 		int key = new Random(new Date().getTime()).nextInt(100);
 		
-		try(Writer writer = new FileWriter(newFile)) {
+		try(FileOutputStream writer = new FileOutputStream(newFile)) {
 			
-			try(Reader reader = new FileReader(file)) {
-				writer.write(key + "#");
+			writer.write(key);
+			writer.write('#');
+			
+			try(FileInputStream reader = new FileInputStream(file)) {
 				
-				int intLetter; // Should be in the range 0 to 65535 (0x00-0xffff)
-				while((intLetter = reader.read()) != -1) {
-					writer.write((char) intLetter+key);
+				int bLetter;
+				while((bLetter = reader.read()) != -1) {
+					writer.write(bLetter+key);
 				}
-			} catch (IOException e) {
-				System.err.println(e.getMessage());
-				System.exit(1);
-			}
+			} 
+			
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
@@ -91,17 +95,19 @@ public class Program {
 		
 		int key = getKey(file);
 		
-		try(Writer writer = new FileWriter(newFile)) {
+		try(FileOutputStream writer = new FileOutputStream(newFile)) {
 			
-			try(Reader reader = new FileReader(file)) {
-				int intLetter; // Should be in the range 0 to 65535 (0x00-0xffff)
-				while((intLetter = reader.read()) != -1) {
-					writer.write((char) intLetter-key);
+			try(FileInputStream reader = new FileInputStream(file)) {
+				int bLetter;
+				while((bLetter = reader.read()) != -1) {
+					if(bLetter == '#')
+						break;
 				}
-			} catch (IOException e) {
-				System.err.println(e.getMessage());
-				System.exit(1);
+				while((bLetter = reader.read()) != -1) {
+					writer.write(bLetter-key);
+				}
 			}
+			
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.exit(1);
@@ -113,26 +119,27 @@ public class Program {
 		String sKey = "";
 		
 		try(Reader reader = new FileReader(file)) {
-			int intLetter;
+			int bLetter;
 			
-			while((intLetter = reader.read()) != -1) {
-				if(intLetter == (int) '#')
+			while((bLetter = reader.read()) != -1) {
+				if(bLetter == '#')
 					break;
 				
-				sKey += (char) intLetter; 
+				sKey += bLetter; 
 			}
 			
 			key = Integer.parseUnsignedInt(sKey);
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
+		} catch (Exception e) {
+			System.err.println("This file has not been ciphered by me.");
 			System.exit(1);
 		}
 		
 		if (key == -1) {
-			System.err.println("Unnable to decipher. I failed you.");
+			System.err.println("This file has not been ciphered by me.");
 			System.exit(1);
 		}
 			
 		return key;
 	}
+	
 }
