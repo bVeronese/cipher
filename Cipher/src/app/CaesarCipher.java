@@ -44,9 +44,9 @@ public class CaesarCipher {
 
 	public static void main(String[] args) {
 		
-		descriptografar(texto);
+		descriptografar("ZPSLMAYKGLFYTCPMLCQC");
 		
-		descriptografar(criptografar("MAMAE EU QUERO LEITE", 24));
+		descriptografar(criptografar("BRUNOCAMINHAVERONESE", 24));
 	}
 
 }

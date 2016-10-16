@@ -12,7 +12,7 @@ public class Base64 {
     	
     	System.out.println( "Iniciando codificação" );
     	
-        StringBuilder saida = new StringBuilder(( arqBytes.length * 4 ) / 3);
+        StringBuilder saida = new StringBuilder( ( arqBytes.length * 4 ) / 3 );
         int ponteiro;
         for ( int i = 0; i < arqBytes.length; i += 3 ) {
             ponteiro = ( arqBytes[ i ] & 0xFC ) >> 2;
@@ -93,12 +93,12 @@ public class Base64 {
     
     public static void main( String[] args ) throws Exception {
 		
-    	File arq1 = new File( "D:\\Testando.txt" );
+    	File arq1 = new File( "D:\\OneDrive\\Documentos\\PUC\\Segurança da Informação\\Prova\\Comando1\\mensagemCesar.txt" );
     	String stringona = codificarArquivo( arq1 );
 
-    	File arq2 = new File( "D:\\TestandoDecodado.txt" );
+    	File arq2 = new File( "D:\\OneDrive\\Documentos\\PUC\\Segurança da Informação\\Prova\\Comando2\\mensagemB64.txt" );
     	FileOutputStream fos = new FileOutputStream( arq2 );
-    	fos.write( decodificar( stringona ) );
+    	fos.write( stringona.getBytes() );
     	fos.close();
     	
     	System.out.println(arq1.compareTo(arq2));
